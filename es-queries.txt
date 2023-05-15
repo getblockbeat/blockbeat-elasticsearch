@@ -1,0 +1,70 @@
+
+### Search the documents by tags and sort by NK value in descending order
+
+curl --location --request GET 'https://my-deployment-8d934d.es.us-east-1.aws.found.io/news/_search' \
+--header 'Authorization: ApiKey UWtFNUY0Z0Jrd1N0QzJCQ0lYX1c6cWMzZ01kc2NSWFdWeXVSTFJ2M1JwQQ==' \
+--header 'Content-Type: application/json' \
+--data '{
+ "_source": ["title","url", "source"], 
+  "query": {
+    "query_string": {
+      "query": "Coinbase~ Binance~",
+      "fields": ["tags"]
+    }
+  },
+  "highlight": {
+    "fields": {
+      "tags": {},
+      "summary": {}
+    }
+  },
+  "sort": [
+    {
+      "NK": {
+        "order": "desc"
+      }
+    }
+  ]
+}'
+
+### Filter the documents by source and sort by NK value in descending order
+
+curl --location --request GET 'https://my-deployment-8d934d.es.us-east-1.aws.found.io/news/_search' \
+--header 'Authorization: ApiKey UWtFNUY0Z0Jrd1N0QzJCQ0lYX1c6cWMzZ01kc2NSWFdWeXVSTFJ2M1JwQQ==' \
+--header 'Content-Type: application/json' \
+--data '{
+ "_source": ["title","url", "source"], 
+  "query": {
+    "match": {
+      "source": "U Today"
+    }
+  },
+  "sort": [
+    {
+      "NK": {
+        "order": "desc"
+      }
+    }
+  ]
+}'
+
+
+### count the documents for different sources
+
+curl --location --request GET 'https://my-deployment-8d934d.es.us-east-1.aws.found.io/news/_search' \
+--header 'Authorization: ApiKey UWtFNUY0Z0Jrd1N0QzJCQ0lYX1c6cWMzZ01kc2NSWFdWeXVSTFJ2M1JwQQ==' \
+--header 'Content-Type: application/json' \
+--data '{
+  "query": {
+    "match_all": {}
+  },
+  "size": 0, 
+  "aggs": {
+    "count_by_source": {
+      "terms": {
+        "field": "source",
+        "size": 1000
+      }
+    }
+  }
+}'
