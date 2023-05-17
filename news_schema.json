@@ -1,0 +1,44 @@
+{
+  "mappings": {
+    "properties": {
+      "sk": {
+        "type": "keyword"
+      },
+      "author": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "summary": {
+        "type": "text"
+      },
+      "headline": {
+        "type": "text"
+      },
+      "content": {
+        "type": "text"
+      },
+      "tags": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          }
+        }
+      },
+      "nk": {
+        "type": "long"
+      },
+      "source": {
+        "type": "keyword"
+      },
+      "url": {
+        "type": "keyword"
+      }
+    }
+  }
+}
