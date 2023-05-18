@@ -161,8 +161,9 @@ def transform_news(items):
         document['tags'] = extract_tags(item.get('tags'), item.get('assets'))
         document['status'] = item.get("status")
         document['url'] = item.get("url")
-
+        
         documents.append(document)
+        add_tags(document['source'], "SOURCE")
 
     return documents
 
