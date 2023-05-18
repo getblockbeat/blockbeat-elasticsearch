@@ -1,0 +1,17 @@
+{
+  "mappings": {
+      "properties": {
+          "tag": {
+              "type": "text",
+              "fields": {
+                  "keyword": {
+                      "type": "keyword"
+                  }
+              }
+          },
+          "tagType": {
+              "type": "keyword"
+          }
+      }
+  }
+}

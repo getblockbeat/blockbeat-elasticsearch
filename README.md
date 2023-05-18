@@ -15,7 +15,7 @@
 - **status** : text - status of the article
 - **url** : keyword - URL of the article
 
-Sample Document:
+Sample news Document:
 
 ```json
 {
@@ -35,12 +35,20 @@ Sample Document:
 }
 ```
 
+Sample newstags Document:
+```json
+{
+    "tag": "DAI",
+    "tagType": "SYMBOL"
+}
+```
+
 ElasticSearch Schema
 
 Index schema is defined in news_schema.json file.
 
 ```json
-PUT documents
+PUT news_{epoch}
 <JSON from news_schema.json>
 ```
 

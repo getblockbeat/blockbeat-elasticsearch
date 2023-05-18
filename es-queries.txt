@@ -68,3 +68,32 @@ curl --location --request GET 'https://my-deployment-8d934d.es.us-east-1.aws.fou
     }
   }
 }'
+
+### statement to search the tags
+
+curl --location --request GET 'https://my-deployment-8d934d.es.us-east-1.aws.found.io/newstags/_search' \
+--header 'Authorization: ApiKey UWtFNUY0Z0Jrd1N0QzJCQ0lYX1c6cWMzZ01kc2NSWFdWeXVSTFJ2M1JwQQ==' \
+--header 'Content-Type: application/json' \
+--data '{
+  "size": 0,
+  "query": {
+    "wildcard": {
+      "tag": "bit*"
+    }
+  },
+  "aggs": {
+    "tagTypes": {
+      "terms": {
+        "field": "tagType",
+        "size": 3
+      },
+      "aggs": {
+        "top_tags": {
+          "top_hits": {
+            "size": 10
+          }
+        }
+      }
+    }
+  }
+}'
