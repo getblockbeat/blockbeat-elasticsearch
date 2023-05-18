@@ -24,11 +24,6 @@ ES_APIKEY = os.environ.get("ES_APIKEY")
 DB_REGION_NAME = os.environ.get("DB_REGION_NAME")
 DB_TABLE_NAME = os.environ.get("DB_TABLE_NAME")
 
-ES_URL = "https://my-deployment-8d934d.es.us-east-1.aws.found.io"
-ES_APIKEY = "UWtFNUY0Z0Jrd1N0QzJCQ0lYX1c6cWMzZ01kc2NSWFdWeXVSTFJ2M1JwQQ=="
-DB_REGION_NAME = "us-east-1"
-DB_TABLE_NAME = "blockbeat-prod"
-
 NEWS_ALIAS = "news"
 TAGS_ALIAS = "newstags"
 NEWS_INDEX_NAME = ''
