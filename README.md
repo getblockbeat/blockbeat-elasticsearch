@@ -197,3 +197,6 @@ following environmental variables are also required.
 - **ES_INDEX** - Name of the elastic search index.
 - **DB_TABLE_NAME** - DynamoDB host name
 - **DB_REGION_NAME** - DynamoDB region name
+
+Important:
+Lambda function should have 15 min timeout and 256 MB as memory

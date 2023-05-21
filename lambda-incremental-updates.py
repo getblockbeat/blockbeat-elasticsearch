@@ -20,17 +20,28 @@ TAGS = {}
 
 # This function mush be set in lambda to get triggered 
 def lambda_handler(events, context):
+    if events.get("Records"):
+        print(f'Number of unfiltered records:{len(events.get("Records"))}')
 
     events = djson.loads(events)
     events = get_news_events(events)
+    if events:
+        print(f'Number of news records:{len(events)}')
 
     if len(events) > 0:
         index_news(events)
         index_tags()
 
+    print({
+        'statusCode': 200,
+        'body': json.dumps(f'Processed {len(events)} news records'),
+        'result': result
+    })
+
     return {
         'statusCode': 200,
-        'body': json.dumps(f'Processed {len(events)} news records')
+        'body': json.dumps(f'Processed {len(events)} news records'),
+        'result': result
     }
 
 # Function stores different tags for newstags index

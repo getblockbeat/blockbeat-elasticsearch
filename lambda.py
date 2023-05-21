@@ -24,6 +24,7 @@ ES_APIKEY = os.environ.get("ES_APIKEY")
 DB_REGION_NAME = os.environ.get("DB_REGION_NAME")
 DB_TABLE_NAME = os.environ.get("DB_TABLE_NAME")
 
+
 NEWS_ALIAS = "news"
 TAGS_ALIAS = "newstags"
 NEWS_INDEX_NAME = ''
