@@ -78,7 +78,7 @@ curl --location --request GET 'https://my-deployment-8d934d.es.us-east-1.aws.fou
   "size": 0,
   "query": {
     "wildcard": {
-      "tag": "bit*"
+      "tag": "*bit*"
     }
   },
   "aggs": {
