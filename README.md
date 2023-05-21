@@ -154,6 +154,46 @@ GET _cat/shards/<INDEX_NAME>?v
 
 - **ES_URL** - URL to access ElasticSearch, it contains protocol, ES host and port number.
 - **ES_APIKEY** - Authentication key to access ‘documents’ index and related APIs in ES.
+- **DB_TABLE_NAME** - DynamoDB host name
+- **DB_REGION_NAME** - DynamoDB region name
+
+
+# steps to create/setup lambda package for function to incremental sync news from DynamoDB to elasticsearch.
+
+python3 -m venv sync_lamdba
+cd sync_lambda
+source bin/activate
+pip3 install requests -t .
+pip3 install dynamodb_json -t .
+cp <project_root>/lambda-incremental-updates.py .
+zip -r lambda-updater.zip *
+
+lambda-updater.zip file can be uploaded as code for lamdba function, with trigger function as lambda-incremental-updates.lambda_handler
+
+following environmental variables are also required.
+
+- **ES_URL** - URL to access ElasticSearch, it contains protocol, ES host and port number.
+- **ES_APIKEY** - Authentication key to access ‘documents’ index and related APIs in ES.
+
+
+
+
+# steps to create/setup lambda package for function for fresh index creation for News from DynamoDB to elasticsearch.
+
+python3 -m venv full_index_lambda
+cd full_index_lambda
+source bin/activate
+pip3 install requests -t .
+pip3 install dynamodb_json -t .
+cp <project_root>/lambda.py .
+zip -r lambda-full-index.zip *
+
+lambda-updater.zip file can be uploaded as code for lamdba function, with trigger function as lambda.lambda_handler
+
+following environmental variables are also required.
+
+- **ES_URL** - URL to access ElasticSearch, it contains protocol, ES host and port number.
+- **ES_APIKEY** - Authentication key to access ‘documents’ index and related APIs in ES.
 - **ES_INDEX** - Name of the elastic search index.
 - **DB_TABLE_NAME** - DynamoDB host name
 - **DB_REGION_NAME** - DynamoDB region name
