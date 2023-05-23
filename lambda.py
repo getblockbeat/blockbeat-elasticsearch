@@ -6,7 +6,6 @@ import os
 import requests
 import hashlib
 import time
-from pprint import pprint
 
 # Dependency: Following environment variables are required
 # ES_URL
@@ -17,13 +16,11 @@ from pprint import pprint
 result = {}
 created = 0
 updated = 0
-threshold = 10
 
 ES_URL = os.environ.get("ES_URL")
 ES_APIKEY = os.environ.get("ES_APIKEY")
 DB_REGION_NAME = os.environ.get("DB_REGION_NAME")
 DB_TABLE_NAME = os.environ.get("DB_TABLE_NAME")
-
 
 NEWS_ALIAS = "news"
 TAGS_ALIAS = "newstags"
@@ -42,11 +39,12 @@ def lambda_handler(event, context):
 def add_tags(tag, tag_type):
     if tag and tag_type and len(tag) > 0 and len(tag_type) > 0:
         tag_type = tag_type.upper()
-        if tag_type not in TAGS:
-            TAGS[tag_type] = set([tag])
-        else:
-            TAGS[tag_type].add(tag)
+        tag['tagType'] = tag_type
 
+        if tag_type not in TAGS:
+            TAGS[tag_type] = {tag['tag']:tag}
+        else:
+            TAGS[tag_type][tag['tag']] = tag
 
 # Pulls all data from NEWS partition
 # Creates indices for news and newstags
@@ -98,8 +96,8 @@ def pull_records_from_dynamodb():
 def index_tags():
     documents = []
     for key in TAGS:
-        for val in TAGS[key]:
-            documents.append({"tag":val, "tagType": key})
+        for inner_key in TAGS[key]:
+            documents.append(TAGS[key][inner_key])
 
     if len(documents) > 0:
         bulk_index_documents(TAGS_INDEX_NAME, documents)
@@ -132,17 +130,32 @@ def update_stats(response):
 
 
 # Extracts tags from attributes from DB attributes
-def extract_tags(tag_object, asset_object):
+def extract_tags(tag_object, assets):
     tag_list = []
 
     if tag_object:
         tag_list = [d["data"] for d in tag_object if "data" in d] if tag_object else []
-        _ = [add_tags(d["data"], d['type']) for d in tag_object if "data" in d and "type" in d]
+        _ = [add_tags({'display':d["data"], 'tag':d["data"]}, d['type']) for d in tag_object if "data" in d and "type" in d and d["data"]]
 
-    if asset_object:
-        tag_list.extend( [d["name"] for d in asset_object if "name" in d] if asset_object else [] )
-        _ = [add_tags(d["symbol"], "symbol") for d in asset_object if "symbol" in d]
-        _ = [add_tags(d["name"], "name") for d in asset_object if "name" in d]
+    if assets:
+        tag_list.extend( [d["name"] for d in assets if "name" in d] if assets else [] )
+        for asset in assets:
+            tag = {}
+            name = asset.get("name")
+            symbol = asset.get("symbol")
+
+            if symbol and symbol != name:
+                tag['display'] = f'{name} {symbol}'
+
+            if name or symbol:
+                tag['tag'] = name if name else symbol
+                add_tags(tag, "asset")
+
+            if name and symbol and name != symbol:
+                another_tag = {}
+                another_tag['display'] = f'{name} {symbol}'
+                another_tag['tag'] = symbol
+                add_tags(another_tag, "asset")
 
     return list(set(tag_list))
 
@@ -164,7 +177,7 @@ def transform_news(items):
         document['url'] = item.get("url")
         
         documents.append(document)
-        add_tags(document['source'], "SOURCE")
+        add_tags({'display':document['source'], 'tag':document['source']}, "SOURCE")
 
     return documents
 
@@ -292,26 +305,10 @@ def switch_alias(alias_name):
         print(f"Success: no change is required, Alias '{alias_name}' is already pointing to '{new_index}'")
 
     old_index_name = old_index_names[0]
-    # Get the count of documents in the old index and the new index
-    headers = {'Content-Type': 'application/json', 'Authorization': f'ApiKey {ES_APIKEY}'}
-    old_count_response = requests.get(f"{ES_URL}/{old_index_name}/_count", headers=headers)
-    old_count = old_count_response.json()["count"]
-    new_count_response = requests.get(count_endpoint, headers=headers)
-    new_count = new_count_response.json()["count"]
 
-    # Calculate the percentage difference in document count
-    percentage_difference = abs(old_count - new_count) / old_count
-
-    # Update or exit without change based on threshold
-    if percentage_difference <= threshold:
-        switch_alias_to_new_index(new_index, alias_name)
-        for old_index_name in old_index_names:
-            delete_old_index(old_index_name)
-    else:
-        print(f"The percentage difference in old and new index is {percentage_difference}")
-        print(f"Count from old index {old_index_names} is {old_count}")
-        print(f"Count from new index {new_index} is {new_count}")
-        print("Please review these number and either manually switch the alias or increase the threshold value and re-run this script.")
+    switch_alias_to_new_index(new_index, alias_name)
+    for old_index_name in old_index_names:
+        delete_old_index(old_index_name)
 
 
 # ES schema for news index
@@ -375,6 +372,9 @@ def get_tags_mappings():
                     }
                 },
                 "tagType": {
+                    "type": "keyword"
+                },
+                "display": {
                     "type": "keyword"
                 }
             }

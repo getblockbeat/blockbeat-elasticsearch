@@ -17,6 +17,7 @@ deleted = 0
 NEWS_INDEX_NAME = "news"
 TAGS_INDEX_NAME = "newstags"
 TAGS = {}
+result = ""
 
 # This function mush be set in lambda to get triggered 
 def lambda_handler(events, context):
@@ -48,10 +49,12 @@ def lambda_handler(events, context):
 def add_tags(tag, tag_type):
     if tag and tag_type and len(tag) > 0 and len(tag_type) > 0:
         tag_type = tag_type.upper()
+        tag['tagType'] = tag_type
+
         if tag_type not in TAGS:
-            TAGS[tag_type] = set([tag])
+            TAGS[tag_type] = {tag['tag']:tag}
         else:
-            TAGS[tag_type].add(tag)
+            TAGS[tag_type][tag['tag']] = tag
 
 
 # Filters NEWS events and drops remaining events
@@ -97,7 +100,7 @@ def transform_news(events):
                 document['url'] = item.get("url")
                 
                 documents.append(document)
-                add_tags(document['source'], "SOURCE")
+                add_tags({'display':document['source'], 'tag':document['source']}, "SOURCE")
 
     return documents
 
@@ -106,8 +109,8 @@ def transform_news(events):
 def index_tags():
     documents = []
     for key in TAGS:
-        for val in TAGS[key]:
-            documents.append({"tag":val, "tagType": key})
+        for inner_key in TAGS[key]:
+            documents.append(TAGS[key][inner_key])
 
     if len(documents) > 0:
         bulk_index_documents(TAGS_INDEX_NAME, documents)
@@ -140,19 +143,35 @@ def update_stats(response):
         result = {'created': created, 'updated': updated, 'deleted': deleted}
 
 # Extracts tags from attributes from DB attributes
-def extract_tags(tag_object, asset_object):
+def extract_tags(tag_object, assets):
     tag_list = []
 
     if tag_object:
         tag_list = [d["data"] for d in tag_object if "data" in d] if tag_object else []
-        _ = [add_tags(d["data"], d['type']) for d in tag_object if "data" in d and "type" in d]
+        _ = [add_tags({'display':d["data"], 'tag':d["data"]}, d['type']) for d in tag_object if "data" in d and "type" in d and d["data"]]
 
-    if asset_object:
-        tag_list.extend( [d["name"] for d in asset_object if "name" in d] if asset_object else [] )
-        _ = [add_tags(d["symbol"], "symbol") for d in asset_object if "symbol" in d]
-        _ = [add_tags(d["name"], "name") for d in asset_object if "name" in d]
+    if assets:
+        tag_list.extend( [d["name"] for d in assets if "name" in d] if assets else [] )
+        for asset in assets:
+            tag = {}
+            name = asset.get("name")
+            symbol = asset.get("symbol")
+
+            if symbol and symbol != name:
+                tag['display'] = f'{name} {symbol}'
+
+            if name or symbol:
+                tag['tag'] = name if name else symbol
+                add_tags(tag, "asset")
+
+            if name and symbol and name != symbol:
+                another_tag = {}
+                another_tag['display'] = f'{name} {symbol}'
+                another_tag['tag'] = symbol
+                add_tags(another_tag, "asset")
 
     return list(set(tag_list))
+
 
 # Generates hash based on document type
 def get_hashed_id(index_name, data):
