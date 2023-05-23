@@ -27,6 +27,31 @@ curl --location --request GET 'https://my-deployment-8d934d.es.us-east-1.aws.fou
   ]
 }'
 
+### search a token in headline and sort the results by NK value in descending order
+curl --location --request GET 'https://my-deployment-8d934d.es.us-east-1.aws.found.io/news/_search' \
+--header 'Authorization: ApiKey UWtFNUY0Z0Jrd1N0QzJCQ0lYX1c6cWMzZ01kc2NSWFdWeXVSTFJ2M1JwQQ==' \
+--header 'Content-Type: application/json' \
+--data '{
+  "query": {
+    "query_string": {
+      "query": "Bitcoin",
+      "fields": ["headline"]
+    }
+  },
+  "highlight": {
+    "fields": {
+      "headline": {}
+    }
+  },
+  "sort": [
+    {
+      "NK": {
+        "order": "desc"
+      }
+    }
+  ]
+}'
+
 ### Filter the documents by source and sort by NK value in descending order
 
 curl --location --request GET 'https://my-deployment-8d934d.es.us-east-1.aws.found.io/news/_search' \
