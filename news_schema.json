@@ -42,10 +42,10 @@
       "iconType": {
         "type": "keyword"
       },
-      "upvote": {
+      "upVote": {
         "type": "long"
       },
-      "downvote": {
+      "downVote": {
         "type": "long"
       }
     }

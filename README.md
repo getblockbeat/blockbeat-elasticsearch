@@ -14,6 +14,9 @@
 - **tags** : text - tags of the article
 - **status** : text - status of the article
 - **url** : keyword - URL of the article
+- **iconType** : text - tags of the article
+- **upVote** : long - upvotes for the article
+- **downVote** : long: downvotes for the article
 
 Sample news Document:
 
@@ -31,7 +34,10 @@ Sample news Document:
     "regulation"
   ],
   "status": "New",
-  "url": "https://www.zerohedge.com/crypto/anything-table-coinbase-ceo-mulls-moving-headquarters-outside-us-amid-crypto-crackdown"
+  "url": "https://www.zerohedge.com/crypto/anything-table-coinbase-ceo-mulls-moving-headquarters-outside-us-amid-crypto-crackdown",
+  "iconType" : "NEWS",
+  "upVote" : 10,
+  "downVote" : 15
 }
 ```
 
@@ -194,7 +200,6 @@ following environmental variables are also required.
 
 - **ES_URL** - URL to access ElasticSearch, it contains protocol, ES host and port number.
 - **ES_APIKEY** - Authentication key to access ‘documents’ index and related APIs in ES.
-- **ES_INDEX** - Name of the elastic search index.
 - **DB_TABLE_NAME** - DynamoDB host name
 - **DB_REGION_NAME** - DynamoDB region name
 

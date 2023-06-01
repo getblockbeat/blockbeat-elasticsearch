@@ -176,8 +176,8 @@ def transform_news(items):
         document['status'] = item.get("status")
         document['url'] = item.get("url")
         document['iconType'] = item.get("iconType")
-        document['upvote'] = item.get("upvote")
-        document['downvote'] = item.get("downvote")
+        document['upVote'] = int(item.get("upVote")) if item.get("upVote") else 0
+        document['downVote'] = int(item.get("downVote")) if item.get("downVote") else 0
 
         documents.append(document)
         add_tags({'display':document['source'], 'tag':document['source']}, "SOURCE")
@@ -356,6 +356,15 @@ def get_news_mappings():
                 },
                 "url": {
                     "type": "keyword"
+                },
+                "iconType": {
+                    "type": "keyword"
+                },
+                "upVote": {
+                    "type": "long"
+                },
+                "downVote": {
+                    "type": "long"
                 }
             }
         }
