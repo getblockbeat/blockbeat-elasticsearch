@@ -38,6 +38,15 @@
       },
       "url": {
         "type": "keyword"
+      },
+      "iconType": {
+        "type": "keyword"
+      },
+      "upvote": {
+        "type": "long"
+      },
+      "downvote": {
+        "type": "long"
       }
     }
   }

@@ -98,7 +98,10 @@ def transform_news(events):
                 document['tags'] = extract_tags(item.get('tags'), item.get('assets'))
                 document['status'] = item.get("status")
                 document['url'] = item.get("url")
-                
+                document['iconType'] = item.get("iconType")
+                document['upvote'] = item.get("upvote")
+                document['downvote'] = item.get("downvote")
+
                 documents.append(document)
                 add_tags({'display':document['source'], 'tag':document['source']}, "SOURCE")
 
