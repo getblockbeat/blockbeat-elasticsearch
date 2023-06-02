@@ -178,11 +178,32 @@ def transform_news(items):
         document['iconType'] = item.get("iconType")
         document['upVote'] = int(item.get("upVote")) if item.get("upVote") else 0
         document['downVote'] = int(item.get("downVote")) if item.get("downVote") else 0
+        document['sentiment'] = float(item.get('enrichment').get('sentiment')) if item.get('enrichment') and item.get('enrichment').get('sentiment') else None
+        document['hot'] = item.get('ai').get('hot') if item.get('ai') and item.get('ai').get('hot') else False
+        document['assets'] = extract_assets(item.get('assets'))
 
         documents.append(document)
         add_tags({'display':document['source'], 'tag':document['source']}, "SOURCE")
 
     return documents
+
+
+#extract name and symbol from assets
+def extract_assets(assets):
+    asset_list = []
+
+    if not assets:
+        return asset_list
+
+    for asset in assets:
+        element = {}
+        element['name'] = asset.get("name")
+        element['symbol'] = asset.get("symbol")
+
+        if element['name'] or element['symbol']:
+            asset_list.append(element)
+
+    return asset_list
 
 
 # Generates hash based on document type
@@ -365,6 +386,15 @@ def get_news_mappings():
                 },
                 "downVote": {
                     "type": "long"
+                },
+                "hot": {
+                    "type": "boolean"
+                },
+                "sentiment": {
+                    "type": "half_float"
+                },
+                "assets": {
+                    "type": "flattened"
                 }
             }
         }

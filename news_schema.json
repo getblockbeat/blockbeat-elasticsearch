@@ -47,6 +47,15 @@
       },
       "downVote": {
         "type": "long"
+      },
+      "hot": {
+          "type": "boolean"
+      },
+      "sentiment": {
+          "type": "half_float"
+      },
+      "assets": {
+          "type": "flattened"
       }
     }
   }
