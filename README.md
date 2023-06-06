@@ -169,7 +169,7 @@ GET _cat/shards/<INDEX_NAME>?v
 python3 -m venv sync_lamdba
 cd sync_lambda
 source bin/activate
-pip3 install requests -t .
+pip3 install --upgrade requests==2.29.0 -t .
 pip3 install dynamodb_json -t .
 cp <project_root>/lambda-incremental-updates.py .
 zip -r lambda-updater.zip *
@@ -189,8 +189,7 @@ following environmental variables are also required.
 python3 -m venv full_index_lambda
 cd full_index_lambda
 source bin/activate
-pip3 install requests -t .
-pip3 install dynamodb_json -t .
+pip3 install --upgrade requests==2.29.0 -t .
 cp <project_root>/lambda.py .
 zip -r lambda-full-index.zip *
 
