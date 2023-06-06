@@ -70,7 +70,7 @@ def pull_records_from_dynamodb():
     create_new_index(NEWS_INDEX_NAME)
     create_new_index(TAGS_INDEX_NAME)
 
-    while 'LastEvaluatedKey' in response: # set false
+    while 'LastEvaluatedKey' in response:
         response = table.query(
             KeyConditionExpression='PK = :pkval',
             ExpressionAttributeValues={
@@ -130,7 +130,9 @@ def update_stats(response):
 
 
 # Extracts tags from attributes from DB attributes
-def extract_tags(tag_object, assets):
+def extract_tags(item):
+    tag_object = item.get('tags')
+    assets = item.get('assets')
     tag_list = []
 
     if tag_object:
@@ -143,21 +145,39 @@ def extract_tags(tag_object, assets):
             tag = {}
             name = asset.get("name")
             symbol = asset.get("symbol")
+            asset_id = asset.get("id")
 
             if symbol and symbol != name:
                 tag['display'] = f'{name} {symbol}'
 
             if name or symbol:
                 tag['tag'] = name if name else symbol
+                tag['symbol'] = symbol
+                tag['assetId'] = None if asset_id is None else int(asset_id)
+                cap = extract_market_cap(asset)
+                tag['marketCap'] = None if cap is None else float(cap)
                 add_tags(tag, "asset")
 
-            if name and symbol and name != symbol:
-                another_tag = {}
-                another_tag['display'] = f'{name} {symbol}'
-                another_tag['tag'] = symbol
-                add_tags(another_tag, "asset")
+            # if name and symbol and name != symbol:
+            #     another_tag = {}
+            #     another_tag['display'] = f'{name} {symbol}'
+            #     another_tag['tag'] = symbol
+            #     add_tags(another_tag, "asset")
 
     return list(set(tag_list))
+
+
+# Removes 'r/' from 'r/bitguy'
+def strip_source_prefix(str):
+    return str[2:] if str is not None and str.startswith("r/") else str
+
+
+# Extract market map
+def extract_market_cap(asset):
+    if ( asset.get("quote")
+         and asset.get("quote").get("USD") ):
+
+        return asset.get("quote").get("USD").get("market_cap")
 
 
 # Converts DB document to ES documents
@@ -172,7 +192,7 @@ def transform_news(items):
         document['headline'] = item.get("headline")
         document['source'] = item.get("source")
         document['NK'] = int(item.get("NK"))
-        document['tags'] = extract_tags(item.get('tags'), item.get('assets'))
+        document['tags'] = extract_tags(item)
         document['status'] = item.get("status")
         document['url'] = item.get("url")
         document['iconType'] = item.get("iconType")
@@ -183,7 +203,7 @@ def transform_news(items):
         document['assets'] = extract_assets(item.get('assets'))
 
         documents.append(document)
-        add_tags({'display':document['source'], 'tag':document['source']}, "SOURCE")
+        add_tags({'display':document['source'], 'tag':strip_source_prefix(document['source']), "iconType":item.get("iconType")}, "SOURCE")
 
     return documents
 
@@ -418,6 +438,18 @@ def get_tags_mappings():
                 },
                 "display": {
                     "type": "keyword"
+                },
+                "source": {
+                    "type": "keyword"
+                },
+                "symbol": {
+                    "type": "text"
+                },
+                "marketCap": {
+                    "type": "float"
+                },
+                "assetId": {
+                    "type": "long"
                 }
             }
         }
