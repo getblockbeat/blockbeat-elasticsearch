@@ -104,6 +104,8 @@ def transform_news(events):
                 document['sentiment'] = float(item.get('enrichment').get('sentiment')) if item.get('enrichment') and item.get('enrichment').get('sentiment') else None
                 document['hot'] = item.get('ai').get('hot') if item.get('ai') and item.get('ai').get('hot') else False
                 document['assets'] = extract_assets(item.get('assets'))
+                document['enrichment'] = { "sentiment" : document['sentiment']}
+                document['ai'] = { "hot" : document['hot']}
 
                 documents.append(document)
                 add_tags({'display':document['source'], 'tag':strip_source_prefix(document['source']), "iconType":item.get("iconType")}, "SOURCE")
