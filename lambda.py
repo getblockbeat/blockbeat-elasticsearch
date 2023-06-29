@@ -391,6 +391,20 @@ def get_news_mappings():
                         }
                     }
                 },
+                "enrichment": {
+                    "properties": {
+                        "sentiment": {
+                            "type": "half_float"
+                        }
+                    }
+                },
+                "ai": {
+                    "properties": {
+                        "hot": {
+                            "type": "boolean"
+                        }
+                    }
+                },
                 "nk": {
                     "type": "long"
                 },
