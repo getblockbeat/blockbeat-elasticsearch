@@ -439,10 +439,24 @@ def get_news_mappings():
 # ES schema for newstags index
 def get_tags_mappings():
     return {
+        "settings": {
+            "analysis": {
+                "analyzer": {
+                    "lowercase_keyword_analyzer": {
+                        "type": "custom",
+                        "tokenizer": "keyword",
+                        "filter": [
+                            "lowercase"
+                        ]
+                    }
+                }
+            }
+        },
         "mappings": {
             "properties": {
                 "tag": {
                     "type": "text",
+                    "analyzer": "lowercase_keyword_analyzer",
                     "fields": {
                         "keyword": {
                             "type": "keyword"
@@ -459,7 +473,8 @@ def get_tags_mappings():
                     "type": "keyword"
                 },
                 "symbol": {
-                    "type": "text"
+                    "type": "text",
+                    "analyzer": "lowercase_keyword_analyzer"
                 },
                 "marketCap": {
                     "type": "float"
