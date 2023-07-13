@@ -56,6 +56,9 @@
       },
       "assets": {
           "type": "flattened"
+      },
+      "tagsData": {
+          "type": "flattened"
       }
     }
   }

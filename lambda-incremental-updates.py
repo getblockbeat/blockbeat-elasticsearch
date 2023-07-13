@@ -6,6 +6,7 @@ import os
 import json
 import hashlib
 import requests
+from decimal import Decimal
 from dynamodb_json import json_util as djson
 
 ES_URL = os.environ.get("ES_URL")
@@ -18,6 +19,15 @@ NEWS_INDEX_NAME = "news"
 TAGS_INDEX_NAME = "newstags"
 TAGS = {}
 result = ""
+
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return int(obj)
+        return super(DecimalEncoder, self).default(obj)
+
+
 
 # This function mush be set in lambda to get triggered 
 def lambda_handler(events, context):
@@ -248,7 +258,7 @@ def bulk_index_documents(index_name, data):
             bulk_data += json.dumps({'delete': { '_index': index_name, '_id': get_hashed_id(index_name, item)}}) + '\n'
         else:
             bulk_data += json.dumps({'index': { '_index': index_name, '_id': get_hashed_id(index_name, item)}}) + '\n'
-            bulk_data += json.dumps(item) + '\n'
+            bulk_data += json.dumps(item, cls=DecimalEncoder) + '\n'
 
         if counter % 1000 == 0:
             # Send bulk request to Elasticsearch

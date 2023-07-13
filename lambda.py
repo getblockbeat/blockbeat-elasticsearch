@@ -6,6 +6,7 @@ import os
 import requests
 import hashlib
 import time
+from decimal import Decimal
 
 # Dependency: Following environment variables are required
 # ES_URL
@@ -27,6 +28,14 @@ TAGS_ALIAS = "newstags"
 NEWS_INDEX_NAME = ''
 TAGS_INDEX_NAME = ''
 TAGS = {}
+
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return int(obj)
+        return super(DecimalEncoder, self).default(obj)
+
 
 
 def lambda_handler(event, context):
@@ -193,6 +202,7 @@ def transform_news(items):
         document['source'] = item.get("source")
         document['NK'] = int(item.get("NK"))
         document['tags'] = extract_tags(item)
+        document['tagsData'] = item.get('tags')
         document['status'] = item.get("status")
         document['url'] = item.get("url")
         document['iconType'] = item.get("iconType")
@@ -248,7 +258,7 @@ def bulk_index_documents(index_name, data):
     for item in data:
         counter += 1
         bulk_data += json.dumps({'index': { '_index': index_name, '_id': get_hashed_id(index_name, item)}}) + '\n'
-        bulk_data += json.dumps(item) + '\n'
+        bulk_data += json.dumps(item, cls=DecimalEncoder) + '\n'
 
         if counter % 1000 == 0:
             # Send bulk request to Elasticsearch
@@ -430,6 +440,9 @@ def get_news_mappings():
                     "type": "half_float"
                 },
                 "assets": {
+                    "type": "flattened"
+                },
+                "tagsData": {
                     "type": "flattened"
                 }
             }
