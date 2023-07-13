@@ -182,25 +182,17 @@ following environmental variables are also required.
 - **ES_APIKEY** - Authentication key to access ‘documents’ index and related APIs in ES.
 
 
-
-
 # steps to create/setup lambda package for function for fresh index creation for News from DynamoDB to elasticsearch.
-
-python3 -m venv full_index_lambda
-cd full_index_lambda
-source bin/activate
-pip3 install --upgrade requests==2.29.0 -t .
-cp <project_root>/lambda.py .
-zip -r lambda-full-index.zip *
-
-lambda-updater.zip file can be uploaded as code for lamdba function, with trigger function as lambda.lambda_handler
-
-following environmental variables are also required.
+following environmental variables are required.
 
 - **ES_URL** - URL to access ElasticSearch, it contains protocol, ES host and port number.
 - **ES_APIKEY** - Authentication key to access ‘documents’ index and related APIs in ES.
 - **DB_TABLE_NAME** - DynamoDB host name
 - **DB_REGION_NAME** - DynamoDB region name
 
+pip3 insyall -r requirements.txt
+python3 full_indexer.py
+
 Important:
-Lambda function should have 15 min timeout and 256 MB as memory
+full_indexer.py was designed for lambda function but it takes longer than 15 minutes beyond which lambda function timesout.
+This program can be executed in cloudshell or from a VM that has access to dynamoDB tables.
