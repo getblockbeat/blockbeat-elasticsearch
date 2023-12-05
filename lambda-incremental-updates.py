@@ -111,7 +111,10 @@ def transform_news(events):
                 document['iconType'] = item.get("iconType")
                 document['upVote'] = int(item.get("upVote")) if item.get("upVote") else 0
                 document['downVote'] = int(item.get("downVote")) if item.get("downVote") else 0
-                document['sentiment'] = float(item.get('enrichment').get('sentiment')) if item.get('enrichment') and item.get('enrichment').get('sentiment') else None
+                sentiment_data = item.get('data', {}).get('sentiment', {})
+                document['positiveSentiment'] = float(sentiment_data.get('positive', 0.0))
+                document['neutralSentiment'] = float(sentiment_data.get('neutral', 0.0))
+                document['negativeSentiment'] = float(sentiment_data.get('negative', 0.0))
                 document['hot'] = item.get('ai').get('hot') if item.get('ai') and item.get('ai').get('hot') else False
                 document['assets'] = extract_assets(item.get('assets'))
                 document['enrichment'] = { "sentiment" : document['sentiment']}
