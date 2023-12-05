@@ -29,23 +29,21 @@ Sample news Document:
   "headline": "\"Anything On The Table:\" Coinbase CEO Mulls Moving Headquarters Outside US Amid Crypto Crackdown",
   "source": "Zerohedge",
   "NK": 1681836600000,
-  "tags": [
-    "Coinbase",
-    "regulation"
-  ],
+  "tags": ["Coinbase", "regulation"],
   "status": "New",
   "url": "https://www.zerohedge.com/crypto/anything-table-coinbase-ceo-mulls-moving-headquarters-outside-us-amid-crypto-crackdown",
-  "iconType" : "NEWS",
-  "upVote" : 10,
-  "downVote" : 15
+  "iconType": "NEWS",
+  "upVote": 10,
+  "downVote": 15
 }
 ```
 
 Sample newstags Document:
+
 ```json
 {
-    "tag": "DAI",
-    "tagType": "SYMBOL"
+  "tag": "DAI",
+  "tagType": "SYMBOL"
 }
 ```
 
@@ -59,7 +57,6 @@ PUT news_{epoch}
 ```
 
 Sample ES Query are in es_queries.txt file
-
 
 APIKey generation Step from DevTools at elastic.co: use “encoded” attribute from response as value of **ES_APIKEY** configuration.
 
@@ -82,7 +79,7 @@ post _security/api_key
 ```
 
 Reindex data from one index to another index in same cluster.
-Reindex will copy all the documents and progress can be monitored using _count command on destination index.
+Reindex will copy all the documents and progress can be monitored using \_count command on destination index.
 Size attribute defines the batch size.
 
 ```json
@@ -99,7 +96,7 @@ POST _reindex
 ```
 
 Reindex data from remote index to another index in different cluster.
-Reindex will copy all the documents and progress can be monitored using _count command on destination index.
+Reindex will copy all the documents and progress can be monitored using \_count command on destination index.
 Size attribute defines the batch size.
 
 ```json
@@ -120,12 +117,12 @@ POST _reindex
   }
 }
 ```
+
 Monitor the change in count in destination index
 
 ```json
 GET <DESTINATION_LOCAL_INDEX>/_count
 ```
-
 
 Remove all documents from an index
 
@@ -163,26 +160,28 @@ GET _cat/shards/<INDEX_NAME>?v
 - **DB_TABLE_NAME** - DynamoDB host name
 - **DB_REGION_NAME** - DynamoDB region name
 
-
 # steps to create/setup lambda package for function to incremental sync news from DynamoDB to elasticsearch.
 
-python3 -m venv sync_lamdba
+python3 -m venv sync_lambda
 cd sync_lambda
 source bin/activate
 pip3 install --upgrade requests==2.29.0 -t .
 pip3 install dynamodb_json -t .
 cp <project_root>/lambda-incremental-updates.py .
-zip -r lambda-updater.zip *
+zip -r lambda-incremental-updates.zip \*
 
-lambda-updater.zip file can be uploaded as code for lamdba function, with trigger function as lambda-incremental-updates.lambda_handler
+<!-- zip -r lambda-incremental-updates.zip * -->
+<!-- this is the correct one. There is a loose slash there that autosave keeps adding -->
+
+lambda-incremental-updates.zip file can be uploaded as code for lamdba function, with trigger function as lambda-incremental-updates.lambda_handler
 
 following environmental variables are also required.
 
 - **ES_URL** - URL to access ElasticSearch, it contains protocol, ES host and port number.
 - **ES_APIKEY** - Authentication key to access ‘documents’ index and related APIs in ES.
 
-
 # steps to create/setup lambda package for function for fresh index creation for News from DynamoDB to elasticsearch.
+
 following environmental variables are required.
 
 - **ES_URL** - URL to access ElasticSearch, it contains protocol, ES host and port number.
