@@ -195,3 +195,9 @@ python3 full_indexer.py
 Important:
 full_indexer.py was designed for lambda function but it takes longer than 15 minutes beyond which lambda function timesout.
 This program can be executed in cloudshell or from a VM that has access to dynamoDB tables.
+
+For Cloudshell, since it is connected to DynamoDB:
+1. AWS Cloudshell - login to AWS and select Cloudshell same way anyone selects dynamoDB
+2. Remember to add the env, making them literal, as against the os. method. i.e. type them out as strings
+2. Upload the full_indexer.py file after making changes to the env
+3. run "python3 full_indexer.py" and the rest as they say, is history

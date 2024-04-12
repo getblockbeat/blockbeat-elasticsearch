@@ -201,7 +201,7 @@ def transform_news(items):
         document['headline'] = item.get("headline")
         document['source'] = item.get("source")
         document['NK'] = int(item.get("NK"))
-        document['tags'] = extract_tags(item)
+        document['tags'] = item.get("tags")
         document['tagsData'] = item.get('tags')
         document['status'] = item.get("status")
         document['url'] = item.get("url")
@@ -397,13 +397,8 @@ def get_news_mappings():
                 "content": {
                     "type": "text"
                 },
-                "tags": {
-                    "type": "text",
-                    "fields": {
-                        "keyword": {
-                            "type": "keyword"
-                        }
-                    }
+                 "tags": {
+                    "type": "flattened"
                 },
                 "enrichment": {
                     "properties": {

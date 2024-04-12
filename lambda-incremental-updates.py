@@ -105,7 +105,7 @@ def transform_news(events):
                 document['headline'] = item.get("headline")
                 document['source'] = item.get("source")
                 document['NK'] = int(item.get("NK"))
-                document['tags'] = extract_tags(item)
+                document['tags'] = item.get("tags")
                 document['status'] = item.get("status")
                 document['url'] = item.get("url")
                 document['iconType'] = item.get("iconType")
