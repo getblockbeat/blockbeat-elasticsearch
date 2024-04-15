@@ -168,6 +168,7 @@ source bin/activate
 pip3 install --upgrade requests==2.29.0 -t .
 pip3 install dynamodb_json -t .
 cp <project_root>/lambda-incremental-updates.py .
+<!-- cp /Users/xxx/Documents/BlockbeatInc/blockbeat/blockbeat-elasticsearch/lambda-incremental-updates.py . -->
 zip -r lambda-incremental-updates.zip \*
 
 <!-- zip -r lambda-incremental-updates.zip * -->
@@ -189,7 +190,7 @@ following environmental variables are required.
 - **DB_TABLE_NAME** - DynamoDB host name
 - **DB_REGION_NAME** - DynamoDB region name
 
-pip3 insyall -r requirements.txt
+pip3 install -r requirements.txt
 python3 full_indexer.py
 
 Important:
